@@ -33,7 +33,6 @@ public class ImageEncryption extends Scene{
 
         index = pfc.indexOf(",",eol) + 1;
         encoded = Integer.parseInt(pfc.substring(index).trim());
-        System.out.println(w + "," + h + "," + seed + "," + encoded);
         new Window(w,h, "ImageEncryption",false);
     }
     
@@ -60,10 +59,10 @@ public class ImageEncryption extends Scene{
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         DataFlavor flavor = DataFlavor.stringFlavor;
         String text = "540,552,405671,1";
+        //540,552,405671,-1
         if (clipboard.isDataFlavorAvailable(flavor)) {
             try {
                 text = (String) clipboard.getData(flavor);
-                System.out.println(text);
             } catch (UnsupportedFlavorException e) {
                 System.out.println(e);
             } catch (IOException e) {

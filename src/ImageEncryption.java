@@ -15,12 +15,51 @@ import java.io.IOException;
 
 public class ImageEncryption extends Scene{
 
-    public static int w,h,seed;
+    public static int w,h,seed,encoded;
+    
+    public static void main(String[] args)  {
+        Window.scenes = new Scene[]{new ImageEncryption()};
+        String pfc = pasteFromClipboard();
+        int eol = pfc.indexOf(",");
+        w = Integer.parseInt(pfc.substring(0, eol).trim());
+
+        int index = pfc.indexOf(",",eol) + 1;
+        eol = pfc.indexOf(",",index);
+        h = Integer.parseInt(pfc.substring(index, eol).trim());
+
+        index = pfc.indexOf(",",eol) + 1;
+        eol = pfc.indexOf(",",index);
+        seed = Integer.parseInt(pfc.substring(index, eol).trim());
+
+        index = pfc.indexOf(",",eol) + 1;
+        encoded = Integer.parseInt(pfc.substring(index).trim());
+        System.out.println(w + "," + h + "," + seed + "," + encoded);
+        new Window(w,h, "ImageEncryption",false);
+    }
+    
+    
+    public void init() {
+        getRenderer().getRIH().setIntsNames(new String[]{"CR"});
+        getRenderer().getRIH().setInts(new int[]{encoded});
+        getRenderer().getRIH().setFloatsNames(new String[]{"seed"});
+        getRenderer().getRIH().setFloats(new float[]{seed/1000.0f});
+        Texture tex = Assets.getTexture("img");
+        FrameBuffer fb = new FrameBuffer(w,h);
+        new Entity().addComponent(new Model(tex, 0, 0, -1));
+        fb.bind();
+        render();
+        fb.unbind();
+        fb.getTexturex().saveImage("newImg", "png");
+        Window.stop();
+    }
+    
+    public void update(float dt) {}
+
 
     public static String pasteFromClipboard() {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         DataFlavor flavor = DataFlavor.stringFlavor;
-        String text = "500,500,4056741";
+        String text = "540,552,405671,1";
         if (clipboard.isDataFlavorAvailable(flavor)) {
             try {
                 text = (String) clipboard.getData(flavor);
@@ -39,24 +78,4 @@ public class ImageEncryption extends Scene{
         StringSelection selection = new StringSelection(text);
         clipboard.setContents(selection, null);
     }
-    
-    public static void main(String[] args)  {
-        Window.scenes = new Scene[]{new ImageEncryption()};
-        new Window(5000,5000, "ImageEncryption",false);
-    }
-    
-    
-    public void init() {
-        System.out.println(pasteFromClipboard());
-        Texture tex = Assets.getTexture("unEncryption");
-        FrameBuffer fb = new FrameBuffer(tex.width(),tex.height());
-        new Entity().addComponent(new Model(tex, 0, 0, -1));
-        fb.bind();
-        render();
-        fb.unbind();
-        fb.getTexturex().saveImage("new", "png");
-        Window.stop();
-    }
-    
-    public void update(float dt) {}
 }

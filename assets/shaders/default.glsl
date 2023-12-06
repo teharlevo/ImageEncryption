@@ -12,21 +12,12 @@ uniform mat4 uProjection;
 out vec4 fColor;
 out vec2 fTexCoords;
 
-float toScreen(float g){
-    if(g > 0){
-        return 1.0;
-    }
-    else{
-        return -1.0;
-    }
-}
-
 void main()
 {
     fColor = aModelColor;
     //fColor = aColor;
     fTexCoords = aTexCoords;
-    gl_Position = vec4(vec3(toScreen(aPos.x),toScreen(aPos.y),0), 1.0);
+    gl_Position = uProjection * uView * aModel * vec4(aPos, 1.0);
 }
 
 #type fragment
@@ -36,6 +27,8 @@ uniform sampler2D[8] uTex_Sampler;
 
 in vec4 fColor;
 in vec2 fTexCoords;
+uniform int CR;
+uniform float seed;
 
 out vec4 color;
 
@@ -58,9 +51,9 @@ float floor(float num) {
 void main()
 {
     vec4 newColor = fColor * texture(uTex_Sampler[0], vec2(fTexCoords.x,fTexCoords.y ));
-    //newColor.r += random (vec2(fTexCoords.x,fTexCoords.y + 1));
-    //newColor.g += random (vec2(fTexCoords.x,fTexCoords.y - 1));
-    //newColor.b += random (vec2(fTexCoords.x + 1,fTexCoords.y));
-    //newColor = vec4(floor(newColor.r),floor(newColor.g),floor(newColor.b),1);
+    newColor.r += random(vec2(fTexCoords.x,fTexCoords.y + seed/1000.0)) * CR;
+    newColor.g += random(vec2(fTexCoords.x,fTexCoords.y - seed/1000.0)) * CR;
+    newColor.b += random(vec2(fTexCoords.x + seed/1000.0,fTexCoords.y)) * CR;
+    newColor = vec4(floor(newColor.r),floor(newColor.g),floor(newColor.b),1);
     color = newColor;
 }
